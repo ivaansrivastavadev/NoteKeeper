@@ -3,40 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Note Keeper</title>
+    <title>Notes World</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.jpg" type="image/x-icon">
+
     <style>
+        /* General styles */
         body {
+            display: flex;
+            height: 100vh;
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
         }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
             padding: 20px;
+            overflow-y: auto;
+            position: fixed;
+            height: 100%;
         }
 
-        h1 {
+        .sidebar h2 {
             text-align: center;
             margin-bottom: 20px;
+        }
+
+        .folder {
+            margin: 10px 0;
+            padding: 5px;
+            background-color: #34495e;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .folder:hover {
+            background-color: #1abc9c;
+        }
+
+        .folder span {
+            font-weight: bold;
+        }
+
+        .nested {
+            margin-left: 20px;
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 270px;
+            padding: 20px;
+            flex-grow: 1;
         }
 
         .note-input {
             width: 100%;
             padding: 10px;
             font-size: 16px;
+            margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            margin-bottom: 10px;
             box-sizing: border-box;
         }
 
@@ -48,7 +78,6 @@
             font-size: 16px;
             border-radius: 4px;
             cursor: pointer;
-            margin-bottom: 20px;
             width: 100%;
         }
 
@@ -57,18 +86,16 @@
         }
 
         .notes-list {
-            list-style: none;
-            padding: 0;
+            margin-top: 20px;
         }
 
         .note {
             background-color: #f9f9f9;
             padding: 10px;
-            border-radius: 4px;
             margin-bottom: 10px;
+            border-radius: 4px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
 
@@ -85,13 +112,32 @@
         .note .delete-btn:hover {
             background-color: #e53935;
         }
-
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Note Keeper</h1>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Notes World</h2>
+        <div class="folder">
+            <span>Main Folder</span>
+            <div class="nested">
+                <div class="folder">Subfolder 1</div>
+                <div class="folder">Subfolder 2</div>
+                <div class="folder">Subfolder 3</div>
+            </div>
+        </div>
+        <div class="folder">
+            <span>Personal</span>
+            <div class="nested">
+                <div class="folder">Work</div>
+                <div class="folder">Shopping</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
         <input type="text" id="noteInput" class="note-input" placeholder="Enter a note...">
         <button id="addNoteBtn" class="note-button">Add Note</button>
 
@@ -101,6 +147,7 @@
     </div>
 
     <script>
+        // Elements
         const addNoteBtn = document.getElementById('addNoteBtn');
         const noteInput = document.getElementById('noteInput');
         const notesList = document.getElementById('notesList');
