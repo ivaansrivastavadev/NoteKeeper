@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note Keeper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .note-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .note-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .note-button:hover {
+            background-color: #45a049;
+        }
+
+        .notes-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .note {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .note .delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .note .delete-btn:hover {
+            background-color: #e53935;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Note Keeper</h1>
+        <input type="text" id="noteInput" class="note-input" placeholder="Enter a note...">
+        <button id="addNoteBtn" class="note-button">Add Note</button>
+
+        <ul id="notesList" class="notes-list">
+            <!-- Notes will appear here -->
+        </ul>
+    </div>
+
+    <script>
+        const addNoteBtn = document.getElementById('addNoteBtn');
+        const noteInput = document.getElementById('noteInput');
+        const notesList = document.getElementById('notesList');
+
+        // Function to add a new note
+        addNoteBtn.addEventListener('click', () => {
+            const noteText = noteInput.value.trim();
+            if (noteText) {
+                const noteItem = document.createElement('li');
+                noteItem.classList.add('note');
+                noteItem.innerHTML = `
+                    <span>${noteText}</span>
+                    <button class="delete-btn">Delete</button>
+                `;
+                notesList.appendChild(noteItem);
+                noteInput.value = ''; // Clear the input after adding
+
+                // Add event listener for delete button
+                noteItem.querySelector('.delete-btn').addEventListener('click', () => {
+                    notesList.removeChild(noteItem); // Delete the note
+                });
+            }
+        });
+
+        // Allow pressing 'Enter' to add a note
+        noteInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addNoteBtn.click();
+            }
+        });
+    </script>
+
+</body>
+</html>
