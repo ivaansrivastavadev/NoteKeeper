@@ -1,184 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notes World</title>
-    
-    <!-- Favicon -->
     <link rel="icon" href="assets/favicon.jpg" type="image/x-icon">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NotesWorld</title>
+  <style>
+    :root {
+      --bg: #f9f9f9;
+      --text: #111;
+      --nav: #ffffff;
+      --card: #ffffff;
+      --accent: #007bff;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
 
-    <style>
-        /* General styles */
-        body {
-            display: flex;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-            margin: 0;
-        }
+    .dark {
+      --bg: #111;
+      --text: #eee;
+      --nav: #1a1a1a;
+      --card: #1f1f1f;
+      --accent: #3399ff;
+      --shadow: rgba(255, 255, 255, 0.05);
+    }
 
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px;
-            overflow-y: auto;
-            position: fixed;
-            height: 100%;
-        }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .sidebar h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: all 0.3s ease;
+    }
 
-        .folder {
-            margin: 10px 0;
-            padding: 5px;
-            background-color: #34495e;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+    nav {
+      background: var(--nav);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 10px var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
-        .folder:hover {
-            background-color: #1abc9c;
-        }
+    .nav-title { font-size: 1.5rem; font-weight: bold; }
+    .nav-actions { display: flex; gap: 0.5rem; }
 
-        .folder span {
-            font-weight: bold;
-        }
+    .toggle-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
 
-        .nested {
-            margin-left: 20px;
-        }
+    .container {
+      padding: 1rem;
+    }
 
-        /* Main content */
-        .main-content {
-            margin-left: 270px;
-            padding: 20px;
-            flex-grow: 1;
-        }
+    .breadcrumb {
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      font-weight: 500;
+    }
 
-        .note-input {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
+    .breadcrumb span {
+      color: var(--accent);
+      cursor: pointer;
+    }
 
-        .note-button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
+    .search-bar input {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 2px 6px var(--shadow);
+    }
 
-        .note-button:hover {
-            background-color: #45a049;
-        }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
 
-        .notes-list {
-            margin-top: 20px;
-        }
+    .card {
+      background: var(--card);
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px var(--shadow);
+      cursor: grab;
+    }
 
-        .note {
-            background-color: #f9f9f9;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        }
+    .card:hover {
+      transform: translateY(-2px);
+    }
 
-        .note .delete-btn {
-            background-color: #f44336;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            font-size: 12px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
+    .card-title { font-weight: bold; }
+    .card-type { font-size: 0.85rem; color: gray; }
 
-        .note .delete-btn:hover {
-            background-color: #e53935;
-        }
-    </style>
+    .editor {
+      display: none;
+      flex-direction: column;
+      padding: 1rem;
+    }
+
+    .editor input, .editor textarea {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+      border: none;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+
+    .floating-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--accent);
+      color: white;
+      width: 56px;
+      height: 56px;
+      font-size: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .popup-menu {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      background: var(--card);
+      padding: 0.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px var(--shadow);
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .popup-menu button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+  </style>
 </head>
 <body>
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>Notes World</h2>
-        <div class="folder">
-            <span>Main Folder</span>
-            <div class="nested">
-                <div class="folder">Subfolder 1</div>
-                <div class="folder">Subfolder 2</div>
-                <div class="folder">Subfolder 3</div>
-            </div>
-        </div>
-        <div class="folder">
-            <span>Personal</span>
-            <div class="nested">
-                <div class="folder">Work</div>
-                <div class="folder">Shopping</div>
-            </div>
-        </div>
+  <nav>
+    <div class="nav-title">NotesWorld</div>
+    <div class="nav-actions">
+      <button class="toggle-btn" onclick="goHome()">🏠</button>
+      <button class="toggle-btn" onclick="toggleDarkMode()">🌓</button>
     </div>
+  </nav>
 
-    <!-- Main content -->
-    <div class="main-content">
-        <input type="text" id="noteInput" class="note-input" placeholder="Enter a note...">
-        <button id="addNoteBtn" class="note-button">Add Note</button>
-
-        <ul id="notesList" class="notes-list">
-            <!-- Notes will appear here -->
-        </ul>
+  <div class="container">
+    
+    <div class="search-bar">
+      <input type="text" placeholder="Search notes..." oninput="searchNotes(this.value)">
     </div>
+    <div class="gallery" id="gallery"></div>
+  </div>
 
-    <script>
-        // Elements
-        const addNoteBtn = document.getElementById('addNoteBtn');
-        const noteInput = document.getElementById('noteInput');
-        const notesList = document.getElementById('notesList');
+  <div class="editor" id="editor">
+    <input id="editTitle" placeholder="Title..."/>
+    <textarea id="editBody" rows="10" placeholder="Start writing..."></textarea>
+  </div>
 
-        // Function to add a new note
-        addNoteBtn.addEventListener('click', () => {
-            const noteText = noteInput.value.trim();
-            if (noteText) {
-                const noteItem = document.createElement('li');
-                noteItem.classList.add('note');
-                noteItem.innerHTML = `
-                    <span>${noteText}</span>
-                    <button class="delete-btn">Delete</button>
-                `;
-                notesList.appendChild(noteItem);
-                noteInput.value = ''; // Clear the input after adding
+  <button class="floating-btn" onclick="toggleMenu()">＋</button>
+  <div class="popup-menu" id="popupMenu">
+    <button onclick="createItem('note')">New Note</button>
+    <button onclick="createItem('folder')">New Folder</button>
+  </div>
 
-                // Add event listener for delete button
-                noteItem.querySelector('.delete-btn').addEventListener('click', () => {
-                    notesList.removeChild(noteItem); // Delete the note
-                });
-            }
-        });
+  <script>
+    let root = JSON.parse(localStorage.getItem("notes_tree")) || [];
+    let currentFolder = root;
+    let currentPath = [];
+    let currentEdit = null;
 
-        // Allow pressing 'Enter' to add a note
-        noteInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                addNoteBtn.click();
-            }
-        });
-    </script>
+    const gallery = document.getElementById("gallery");
+    const breadcrumb = document.getElementById("breadcrumb");
+    const editor = document.getElementById("editor");
 
+    function render(folder = root) {
+      gallery.innerHTML = "";
+      folder.forEach((item, i) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.draggable = true;
+        card.dataset.index = i;
+        card.innerHTML = `<div class="card-title">${item.title}</div>
+                          <div class="card-type">${item.type}</div>`;
+        card.ondragstart = e => {
+          e.dataTransfer.setData("text/plain", i);
+        };
+        card.ondragover = e => {
+          if (item.type === "Folder") e.preventDefault();
+        };
+        card.ondrop = e => {
+          e.preventDefault();
+          const from = e.dataTransfer.getData("text/plain");
+          const moved = currentFolder.splice(from, 1)[0];
+          item.children = item.children || [];
+          item.children.push(moved);
+          save();
+          render(currentFolder);
+        };
+        card.onclick = () => {
+          if (item.type === "Note") {
+            openEditor(item);
+            currentEdit = item;
+          } else if (item.type === "Folder") {
+            currentPath.push(currentFolder);
+            currentFolder = item.children = item.children || [];
+            render(currentFolder);
+            updateBreadcrumb();
+          }
+        };
+        gallery.appendChild(card);
+      });
+
+      editor.style.display = "none";
+      document.querySelector(".container").style.display = "block";
+    }
+
+    function openEditor(item) {
+      document.getElementById("editTitle").value = item.title;
+      document.getElementById("editBody").value = item.body || "";
+      editor.style.display = "flex";
+      document.querySelector(".container").style.display = "none";
+    }
+
+    function save() {
+      localStorage.setItem("notes_tree", JSON.stringify(root));
+    }
+
+    function createItem(type) {
+      const title = prompt(`Enter ${type} title`);
+      if (title) {
+        const newItem = { type: type === "note" ? "Note" : "Folder", title };
+        if (type === "note") newItem.body = "";
+        if (type === "folder") newItem.children = [];
+        currentFolder.push(newItem);
+        save();
+        render(currentFolder);
+      }
+      toggleMenu(false);
+    }
+
+    function toggleMenu(force) {
+      const menu = document.getElementById("popupMenu");
+      if (force === false) {
+        menu.style.display = "none";
+      } else {
+        menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+      }
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    }
+
+    function goHome() {
+      currentFolder = root;
+      currentPath = [];
+      render(currentFolder);
+      updateBreadcrumb();
+    }
+
+    function updateBreadcrumb() {
+      breadcrumb.innerHTML = "ROOT / ";
+      currentPath.forEach((folder, i) => {
+        const part = document.createElement("span");
+        part.innerText = folder.title;
+        part.onclick = () => {
+          currentFolder = folder.children;
+          currentPath = currentPath.slice(0, i);
+          render(currentFolder);
+          updateBreadcrumb();
+        };
+        breadcrumb.appendChild(part);
+        breadcrumb.innerHTML += " / ";
+      });
+    }
+
+    function searchNotes(query) {
+      const cards = gallery.querySelectorAll(".card");
+      cards.forEach(card => {
+        const title = card.querySelector(".card-title").innerText.toLowerCase();
+        card.style.display = title.includes(query.toLowerCase()) ? "block" : "none";
+      });
+    }
+
+    window.onload = () => {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+      }
+      render();
+      updateBreadcrumb();
+    };
+  </script>
 </body>
 </html>
